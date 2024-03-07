@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorTextSecondary">#CBD5ED</color>
+
+    <color name="light_gray">#CCCCCC</color> <!-- Regular light gray -->
+    <color name="light_gray_50">#80CCCCCC</color> <!-- 50% transparency -->
+    <color name="light_gray_30">#4DCCCCCC</color> <!-- 30% transparency -->
+    <color name="light_gray_10">#1ACCCCCC</color> <!-- 10% transparency -->
+
+
+</resources>
