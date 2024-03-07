@@ -12,25 +12,32 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.protocolapp.R;
 import com.example.protocolapp.model.Protocol;
+import com.example.protocolapp.model.Step;
 import com.example.protocolapp.retrofit.ApiInterface;
 import com.example.protocolapp.retrofit.RetrofitClient;
 import com.google.android.material.button.MaterialButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AddProtocolActivity extends AppCompatActivity {
+    private Map<Integer, EditText> stepEditTextList = new HashMap<>();
+    private Map<Integer, EditText> instructionList = new HashMap<>();
+    private List<Step> stepList = new ArrayList<>();
+
     private MaterialButton save, back;
     private LinearLayout editTextContainer;
     private Button addStep;
@@ -41,8 +48,8 @@ public class AddProtocolActivity extends AppCompatActivity {
     private Button selectImageButton;
     private ImageView imageView;
 
-    private EditText nameET, taskListET, taskListAuthorET;
-    private String name, taskList, taskListAuthor;
+    private EditText nameET, taskListET, taskListAuthorET, instructionEditText, stepEditText, description1ET, newEditText;
+    private String name, taskList, taskListAuthor, instruction, step, description1, newText;
 
 
     @Override
@@ -61,6 +68,8 @@ public class AddProtocolActivity extends AppCompatActivity {
         taskListET = findViewById(R.id.taskListET);
         taskListAuthorET = findViewById(R.id.taskListAuthorET);
         save = findViewById(R.id.save);
+        description1ET = findViewById(R.id.description1ET);
+        newEditText = findViewById(R.id.newEditText);
         imageView = findViewById(R.id.imageView);
 
 
@@ -77,10 +86,11 @@ public class AddProtocolActivity extends AppCompatActivity {
             startActivity(intent);
         });
         save.setOnClickListener(v -> {
+            collectValuesFromEditTexts();
             assignValues();
             btnPostRequest();
             Intent intent = new Intent(AddProtocolActivity.this, SuccessPageActivity.class);
-
+            stepList = new ArrayList<>();
             startActivity(intent);
         });
         addStep.setOnClickListener(new View.OnClickListener() {
@@ -95,7 +105,11 @@ public class AddProtocolActivity extends AppCompatActivity {
         name = nameET.getText().toString();
         taskList = taskListET.getText().toString();
         taskListAuthor = taskListAuthorET.getText().toString();
-        protocol = new Protocol("1", name, taskList, taskListAuthor, new ArrayList<>());
+        description1 = description1ET.getText().toString();
+        newText = newEditText.getText().toString();
+        Step step1 = new Step("1", description1, newText);
+        stepList.add(step1);
+        protocol = new Protocol("1", name, taskList, taskListAuthor, stepList);
     }
 
     private void btnPostRequest() {
@@ -144,6 +158,7 @@ public class AddProtocolActivity extends AppCompatActivity {
             }
         }
     }
+
     private void createInputs() {
         // Create LinearLayout as a container for each set of views
         LinearLayout linearLayout = new LinearLayout(this);
@@ -151,12 +166,12 @@ public class AddProtocolActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
         );
-        layoutParams.setMargins(80, marginTop, 0, 0);
+        layoutParams.setMargins(50, marginTop, 0, 0);
         linearLayout.setLayoutParams(layoutParams);
         linearLayout.setGravity(LinearLayout.TEXT_ALIGNMENT_CENTER);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
-
+        editTextContainer.setId(stepCounter);
         editTextContainer.addView(linearLayout);
 
         // Create TextView for step description
@@ -173,8 +188,8 @@ public class AddProtocolActivity extends AppCompatActivity {
         stepTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(stepCounter==3){
-                    marginTop=2600;
+                if (stepCounter == 3) {
+                    marginTop = 2600;
                     stepCounter--;
                 }
                 editTextContainer.removeView(linearLayout);
@@ -191,10 +206,11 @@ public class AddProtocolActivity extends AppCompatActivity {
         linearLayout.addView(descriptionStep);
 
         // Create EditText for step description
-        EditText stepEditText = new EditText(this);
+        stepEditText = new EditText(this);
         stepEditText.setHint("Описание");
         stepEditText.setWidth(900);
         stepEditText.setHeight(200);
+        stepEditText.setId(stepCounter);
         stepEditText.setBackgroundColor(Color.WHITE);
 
         linearLayout.addView(stepEditText);
@@ -206,11 +222,14 @@ public class AddProtocolActivity extends AppCompatActivity {
         linearLayout.addView(instructionTextView);
 
         // Create EditText for additional instruction
-        EditText instructionEditText = new EditText(this);
+        instructionEditText = new EditText(this);
         instructionEditText.setHint("Текст");
         instructionEditText.setWidth(900);
         instructionEditText.setHeight(200);
         instructionEditText.setBackgroundColor(Color.WHITE);
+        instructionList.put(stepCounter, instructionEditText);
+        stepEditTextList.put(stepCounter, stepEditText);
+
         linearLayout.addView(instructionEditText);
 
         // Create TextView for image upload
@@ -233,5 +252,16 @@ public class AddProtocolActivity extends AppCompatActivity {
 
         // Increase marginTop for the next set of views
         marginTop = 20; // Adjust this value as needed
+    }
+
+    private void collectValuesFromEditTexts() {
+        for (Map.Entry<Integer, EditText> editText : stepEditTextList.entrySet()) {
+            String instruction = instructionList.get(editText.getKey()).getText().toString();
+            String text = editText.getValue().getText().toString();
+            Step step1 = new Step(editText.getKey().toString(), instruction, text);
+            stepList.add(step1);
+            System.out.println(text);
+            // You can store these values in an appropriate data structure or perform any other operations as needed
+        }
     }
 }
