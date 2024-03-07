@@ -2,7 +2,6 @@ package com.example.protocolapp.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -10,16 +9,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.protocolapp.R;
 import com.example.protocolapp.db.DbHelper;
+import com.example.protocolapp.model.User;
+import com.example.protocolapp.retrofit.ApiInterface;
+import com.example.protocolapp.retrofit.RetrofitClient;
 import com.google.android.material.button.MaterialButton;
 
-import java.time.LocalDate;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
-    private MaterialButton  login, back;
+    private MaterialButton login, back;
     private EditText emailEt, passwordEt;
     private String email, password;
     private DbHelper dbHelper;
-
 
 
     @Override
@@ -28,12 +31,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         findViewById();
         setButtonClickListener();
-        dbHelper=new DbHelper(this);
+        dbHelper = new DbHelper(this);
 //        dbHelper.insertContact("user@gmail.com","user");
 
 
-
     }
+
     private void findViewById() {
         back = findViewById(R.id.back);
         passwordEt = findViewById(R.id.passwordEt);
@@ -41,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         login = findViewById(R.id.login);
 
     }
+
     private void setButtonClickListener() {
 
         back.setOnClickListener(v -> {
@@ -48,24 +52,37 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
         login.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, UserPageActivity.class);
             login();
-            startActivity(intent);
+
         });
     }
-    private String  login() {
+
+    private void login() {
         email = emailEt.getText().toString();
         password = passwordEt.getText().toString();
+        ApiInterface apiInterface = RetrofitClient.getRetrofitInstance().create(ApiInterface.class);
+        Call<User> call = apiInterface.login2(email);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.code()==302) {
+                    Intent intent = new Intent(LoginActivity.this, UserPageActivity.class);
+                    startActivity(intent);
 
-        if (!email.isEmpty() || !password.isEmpty()) {
+                } else {
+                    // Login failed, handle error
+                    Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                }
+            }
 
-            String byEmail = dbHelper.findByEmail(email);
-
-            Toast.makeText(getApplicationContext(), "Login Successfully...."+byEmail, Toast.LENGTH_SHORT).show();
-        return byEmail;
-        }
-        Toast.makeText(getApplicationContext(), "Login doesnt Successfully...."+email, Toast.LENGTH_SHORT).show();
-
-        return null;
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                // Request failed, handle error
+                t.printStackTrace();
+                Toast.makeText(LoginActivity.this, "Request failed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
+
 }

@@ -1,6 +1,14 @@
 package com.example.protocolapp.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class User {
+    @SerializedName("token")
+    private String token;
+
+    public String getToken() {
+        return token;
+    }
    private Long id;
     private String email;
     private String password;
