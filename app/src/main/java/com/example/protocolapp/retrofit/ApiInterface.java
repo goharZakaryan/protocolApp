@@ -32,4 +32,6 @@ public interface ApiInterface {
 
     @GET("findProtocol")
     Call<List<Protocol>> findProtocolByEmail(@Query("email") String email);
+    @GET("remove")
+    Call<Void> remove(@Query("remove") Long id);
 }

@@ -51,8 +51,8 @@
             android:layout_height="65dp"
             android:background="@color/white"
             android:gravity="center_vertical"
-            android:text="Эл почта"
-
+            android:hint="Эл почта"
+            android:layout_margin="20dp"
             android:inputType="textPersonName"
             android:textSize="15dp" />
 
@@ -73,8 +73,9 @@
             android:layout_height="65dp"
             android:background="@color/white"
             android:gravity="center_vertical"
+            android:layout_margin="20dp"
 
-            android:text="Пароль"
+            android:hint="Пароль"
             android:inputType="textPersonName"
             android:textSize="15dp" />
     </LinearLayout>

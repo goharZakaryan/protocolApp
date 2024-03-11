@@ -62,6 +62,7 @@ public class AddProtocolActivity extends AppCompatActivity {
     private ImageView imageView;
     private VideoView videoView;
     private View fileView;
+    private Long protocolId;
 
     private EditText nameET, taskListET, taskListAuthorET, instructionEditText, stepEditText, description1ET, newEditText;
     private String name, taskList, taskListAuthor, description1, newText,email;
@@ -74,6 +75,7 @@ public class AddProtocolActivity extends AppCompatActivity {
         findViewById();
         setButtonClickListener();
         email=getIntent().getStringExtra("email");
+        protocolId=getIntent().getLongExtra("id",0);
 
         videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
@@ -135,7 +137,7 @@ public class AddProtocolActivity extends AppCompatActivity {
         newText = newEditText.getText().toString();
         Step step1 = new Step("1", description1, newText);
         stepList.add(step1);
-        protocol = new Protocol( name, taskList, taskListAuthor, stepList,new User(email));
+        protocol = new Protocol( protocolId,name, taskList, taskListAuthor, stepList,new User(email));
     }
 
     private void btnPostRequest() {

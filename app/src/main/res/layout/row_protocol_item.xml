@@ -4,7 +4,9 @@
     android:id="@+id/my_relative_layout_bio"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/white"
     android:clickable="true"
+
     android:focusable="true">
 
     <LinearLayout
@@ -17,34 +19,47 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
+        android:background="@color/light_gray"
         android:orientation="vertical"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- First LinearLayout with Name -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+            <!-- Description TextView -->
             <TextView
                 android:id="@+id/name"
-                android:layout_width="wrap_content"
+                android:layout_width="350dp"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
 
-                android:layout_height="wrap_content"
-                android:gravity="center"
-
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:textColor="@color/black"
-                android:textSize="24dp"
-                android:textStyle="bold" />
+                android:textSize="18dp" />
 
+            <!-- Index TextView -->
+            <TextView
+                android:id="@+id/remove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:drawablePadding="40dp"
+
+                android:text="Удалить"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="left"
             android:orientation="horizontal">
 
             <!-- Description TextView -->
@@ -52,24 +67,15 @@
                 android:id="@+id/taskListAuthor"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
+                android:layout_margin="8dp"
                 android:layout_weight="1"
 
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@color/black"
-                android:textSize="18dp"
-                android:textStyle="italic" />
-
-            <!-- Index TextView -->
-            <TextView
-                android:id="@+id/tv_index"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:drawablePadding="8dp"
-                android:textColor="@color/black"
                 android:textSize="18dp" />
+
+
         </LinearLayout>
 
         <LinearLayout
@@ -80,15 +86,51 @@
 
             <TextView
                 android:id="@+id/edit"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_margin="8dp"
+                android:text="Редактировать"
                 android:textColor="@color/black"
-                android:textSize="10dp" />
+                android:textSize="18dp" />
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
+            <!-- Description TextView -->
+            <TextView
+                android:id="@+id/score"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+
+                android:maxLines="1"
+                android:text="Рейтинг протокола"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
+
+            <!-- Index TextView -->
+            <TextView
+                android:id="@+id/tv_index"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:drawablePadding="8dp"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/black_line"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginTop="7dp"
+            android:background="@color/white" />
 
     </LinearLayout>
 </RelativeLayout>

@@ -8,14 +8,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.protocolapp.R;
+import com.example.protocolapp.activity.AddProtocolActivity;
+import com.example.protocolapp.activity.LoginActivity;
+import com.example.protocolapp.activity.UserPageActivity;
 import com.example.protocolapp.model.Protocol;
+import com.example.protocolapp.retrofit.ApiInterface;
+import com.example.protocolapp.retrofit.RetrofitClient;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AdapterProtocol extends RecyclerView.Adapter<AdapterProtocol.ContactViewHolder> {
 
@@ -37,15 +47,14 @@ public class AdapterProtocol extends RecyclerView.Adapter<AdapterProtocol.Contac
     }
 
 
-
     @Override
     public void onBindViewHolder(@NonNull ContactViewHolder holder, int position) {
         Protocol modelContact = protocols.get(position);
         //get data
         //we need only All data
 
-        String name =modelContact.getName();
-        String taskListAuthor=modelContact.getTaskListAuthor();
+        String name = modelContact.getName();
+        String taskListAuthor = modelContact.getTaskListAuthor();
 
         holder.tvIndex.setText(String.valueOf(position + 1));
         holder.name.setText(String.valueOf(name));
@@ -54,21 +63,23 @@ public class AdapterProtocol extends RecyclerView.Adapter<AdapterProtocol.Contac
 
         Log.d("AdapterContact", "Item or layout clicked!");
 
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View view) {
-//                Log.d("AdapterContact", "Item or layout clicked!");
-//
-//                Intent intent = new Intent(context, ContactRecordDetails.class);
-//                intent.putExtra("genAutoId", generatedId);
-//                intent.putExtra("id", id);
-//                context.startActivity(intent); // now get data from details Activity
-//
-//            }
-//        });
+        holder.remove.setOnClickListener(view -> {
+            Log.d("AdapterContact", "Item or layout clicked!");
+            removeProtocol(modelContact, position);
+
+        });
+        holder.edit.setOnClickListener(view -> {
+            Log.d("AdapterContact", "Item or layout clicked!");
+            Intent intent = new Intent(context, AddProtocolActivity.class);
+            intent.putExtra("id", modelContact.getId());
+            context.startActivity(intent); // now get data from details Activity
+
+
+
+        });
 
     }
+
     @Override
     public int getItemCount() {
         return protocols.size();
@@ -76,7 +87,7 @@ public class AdapterProtocol extends RecyclerView.Adapter<AdapterProtocol.Contac
 
 
     class ContactViewHolder extends RecyclerView.ViewHolder {
-        TextView name,  taskListAuthor;
+        TextView name, taskListAuthor, remove, edit;
         RelativeLayout relativeLayout;
         TextView tvIndex;
 
@@ -87,9 +98,40 @@ public class AdapterProtocol extends RecyclerView.Adapter<AdapterProtocol.Contac
             //init view
             name = itemView.findViewById(R.id.name);
             taskListAuthor = itemView.findViewById(R.id.taskListAuthor);
+            remove = itemView.findViewById(R.id.remove);
+            edit = itemView.findViewById(R.id.edit);
             relativeLayout = itemView.findViewById(R.id.my_relative_layout_bio);
 
         }
 
     }
+
+    private void removeProtocol(Protocol protocol, int position) {
+        ApiInterface apiInterface = RetrofitClient.getRetrofitInstance().create(ApiInterface.class);
+        Call<Void> call = apiInterface.remove(protocol.getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    protocols.remove(protocol);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, protocols.size());
+                    notifyDataSetChanged();
+                    Toast.makeText(context, "Protocol successfully removed...", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    // Handle unsuccessful response
+                    Toast.makeText(context, "Request unsuccessful", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                // Handle request failure
+                t.printStackTrace();
+                Toast.makeText(context, "Request failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }
