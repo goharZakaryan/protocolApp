@@ -11,9 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.protocolapp.R;
 import com.google.android.material.button.MaterialButton;
 
-public class ModeActivity extends AppCompatActivity {
+public class ProtocolActivity extends AppCompatActivity {
     private MaterialButton scannerButton, activeMode, silentMode;
-    private String protocolId;
 
 
     @Override
@@ -22,8 +21,6 @@ public class ModeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_mode);
         findViewById();
         setButtonClickListener();
-        protocolId=getIntent().getStringExtra("scan");
-
         String activeModeText = "Active Mode \n\n Для новичка, проведёт Вас сначала до \n конца вместе с голосовым помощником";
         String silentModeText = "Silent Mode \n\n Для профи, не будет мешать, напомнит \n только при случае необходимости";
 
@@ -42,13 +39,11 @@ public class ModeActivity extends AppCompatActivity {
 
     private void setButtonClickListener() {
         scannerButton.setOnClickListener(v -> {
-            Intent intent = new Intent(ModeActivity.this, MainActivity.class);
-
+            Intent intent = new Intent(ProtocolActivity.this, MainActivity.class);
             startActivity(intent);
         });
         activeMode.setOnClickListener(v -> {
-            Intent intent = new Intent(ModeActivity.this, ExecuteProtocolActivity.class);
-            intent.putExtra("id",protocolId);
+            Intent intent = new Intent(ProtocolActivity.this, ExecuteProtocolActivity.class);
             startActivity(intent);
         });
     }

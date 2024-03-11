@@ -7,7 +7,7 @@
     android:background="@color/light_gray"
     tools:context=".activity.MainActivity">
 
-    <View
+    <TextView
         android:id="@+id/view"
         android:layout_width="300dp"
         android:layout_height="300dp"
