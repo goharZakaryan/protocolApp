@@ -3,24 +3,19 @@ package com.example.protocolapp.model;
 import java.util.List;
 
 public class Protocol {
-    private String id, name, taskList,taskListAuthor;
+    private String  name, taskList,taskListAuthor, userEmail;
+    private  User user;
     private List<Step> steps;
 
-    public Protocol(String id, String name, String taskList, String taskListAuthor, List<Step> steps) {
-        this.id = id;
+    public Protocol(String name, String taskList, String taskListAuthor, List<Step> steps, User user) {
         this.name = name;
+        this.user=user;
         this.taskList = taskList;
         this.taskListAuthor = taskListAuthor;
         this.steps = steps;
     }
 
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

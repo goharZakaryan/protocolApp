@@ -67,6 +67,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.code()==302) {
                     Intent intent = new Intent(LoginActivity.this, UserPageActivity.class);
+                    intent.putExtra("email", email);
+
                     startActivity(intent);
 
                 } else {

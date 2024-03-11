@@ -1,29 +1,40 @@
 package com.example.protocolapp.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.protocolapp.R;
 import com.example.protocolapp.model.Protocol;
 import com.example.protocolapp.model.Step;
+import com.example.protocolapp.model.User;
 import com.example.protocolapp.retrofit.ApiInterface;
 import com.example.protocolapp.retrofit.RetrofitClient;
 import com.google.android.material.button.MaterialButton;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +45,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AddProtocolActivity extends AppCompatActivity {
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+
     private Map<Integer, EditText> stepEditTextList = new HashMap<>();
     private Map<Integer, EditText> instructionList = new HashMap<>();
     private List<Step> stepList = new ArrayList<>();
@@ -47,9 +60,11 @@ public class AddProtocolActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private Button selectImageButton;
     private ImageView imageView;
+    private VideoView videoView;
+    private View fileView;
 
     private EditText nameET, taskListET, taskListAuthorET, instructionEditText, stepEditText, description1ET, newEditText;
-    private String name, taskList, taskListAuthor, instruction, step, description1, newText;
+    private String name, taskList, taskListAuthor, description1, newText,email;
 
 
     @Override
@@ -58,6 +73,15 @@ public class AddProtocolActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_protocol);
         findViewById();
         setButtonClickListener();
+        email=getIntent().getStringExtra("email");
+
+        videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
+                Log.e("VideoView", "Error occurred: " + what + ", " + extra);
+                return false; // Return true if you want to handle the error, false otherwise
+            }
+        });
 
 
     }
@@ -71,6 +95,8 @@ public class AddProtocolActivity extends AppCompatActivity {
         description1ET = findViewById(R.id.description1ET);
         newEditText = findViewById(R.id.newEditText);
         imageView = findViewById(R.id.imageView);
+        videoView = findViewById(R.id.videoView);
+        fileView = findViewById(R.id.fileView);
 
 
         editTextContainer = findViewById(R.id.editTextContainer);
@@ -109,7 +135,7 @@ public class AddProtocolActivity extends AppCompatActivity {
         newText = newEditText.getText().toString();
         Step step1 = new Step("1", description1, newText);
         stepList.add(step1);
-        protocol = new Protocol("1", name, taskList, taskListAuthor, stepList);
+        protocol = new Protocol( name, taskList, taskListAuthor, stepList,new User(email));
     }
 
     private void btnPostRequest() {
@@ -138,9 +164,9 @@ public class AddProtocolActivity extends AppCompatActivity {
 
     private void openFileChooser() {
         Intent intent = new Intent();
-        intent.setType("image/*");
+        intent.setType("*/*"); // Allow all types of files
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, "Select File"), PICK_IMAGE_REQUEST);
     }
 
     @Override
@@ -148,16 +174,51 @@ public class AddProtocolActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri imageUri = data.getData();
+            Uri fileUri = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                imageView.setImageBitmap(bitmap);
-                imageView.setVisibility(View.VISIBLE); // Show the ImageView
+                String fileType = getContentResolver().getType(fileUri);
+                if (fileType != null) {
+                    if (fileType.startsWith("image/")) {
+                        // Handle image file
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), fileUri);
+                        imageView.setImageBitmap(bitmap);
+                        imageView.setVisibility(View.VISIBLE); // Show the ImageView
+                    } else if (fileType.startsWith("video/")) {
+                        videoView.setVideoURI(fileUri);
+                        videoView.setVisibility(View.VISIBLE);
+
+                        MediaController mediaController = new MediaController(this);
+                        mediaController.setAnchorView(videoView);
+                        videoView.setMediaController(mediaController);
+                        videoView.start();
+                        imageView.setVisibility(View.GONE);
+                        fileView.setVisibility(View.GONE);
+                    } else if (fileType.startsWith("text/")) {
+                        // Handle text file
+                        String text = readTextFile(fileUri);
+//                        fileView.setText(text);
+                        fileView.setVisibility(View.VISIBLE);
+                        imageView.setVisibility(View.GONE);
+                        videoView.setVisibility(View.GONE);
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
+    private String readTextFile(Uri fileUri) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(getContentResolver().openInputStream(fileUri)));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line).append("\n");
+        }
+        reader.close();
+        return stringBuilder.toString();
+    }
+
 
     private void createInputs() {
         // Create LinearLayout as a container for each set of views
@@ -263,5 +324,22 @@ public class AddProtocolActivity extends AppCompatActivity {
             System.out.println(text);
             // You can store these values in an appropriate data structure or perform any other operations as needed
         }
+    }
+    private void permission(){
+
+// Check if the permission is already granted
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted, request it
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_EXTERNAL_STORAGE);
+        } else {
+            // Permission has already been granted
+            // Perform the operation that requires this permission
+        }
+
     }
 }
