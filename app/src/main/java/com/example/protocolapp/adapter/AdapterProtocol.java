@@ -49,14 +49,16 @@ public class AdapterProtocol extends RecyclerView.Adapter<AdapterProtocol.Contac
 
     @Override
     public void onBindViewHolder(@NonNull ContactViewHolder holder, int position) {
-        Protocol modelContact = protocols.get(position);
+        int reversePosition = getItemCount() - position - 1;
+
+        Protocol modelContact = protocols.get(reversePosition);
         //get data
         //we need only All data
 
         String name = modelContact.getName();
         String taskListAuthor = modelContact.getTaskListAuthor();
 
-        holder.tvIndex.setText(String.valueOf(position + 1));
+        holder.tvIndex.setText(String.valueOf(reversePosition -1));
         holder.name.setText(String.valueOf(name));
         holder.taskListAuthor.setText(String.valueOf(taskListAuthor));
 

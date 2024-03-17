@@ -1,6 +1,7 @@
 package com.example.protocolapp.retrofit;
 
 import com.example.protocolapp.model.Protocol;
+import com.example.protocolapp.model.Score;
 import com.example.protocolapp.model.User;
 
 import java.util.List;
@@ -22,7 +23,13 @@ import retrofit2.http.Query;
 public interface ApiInterface {
 
     @POST("server")
-    Call<String> save(@Body Protocol requestModel);
+    @Multipart
+    Call<String> save(
+            @Part("requestModel") Protocol requestModel,
+            @Part List<MultipartBody.Part> files
+    );
+    @POST("score")
+    Call<String> saveScore(@Body Score requestModel);
 
     @POST("login")
     Call<User> login2(

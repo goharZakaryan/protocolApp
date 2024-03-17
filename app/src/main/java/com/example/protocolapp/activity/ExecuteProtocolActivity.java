@@ -5,8 +5,12 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.protocolapp.R;
+import com.example.protocolapp.adapter.AdapterProtocol;
+import com.example.protocolapp.adapter.AdapterSteps;
 import com.example.protocolapp.model.Protocol;
 import com.example.protocolapp.retrofit.ApiInterface;
 import com.example.protocolapp.retrofit.RetrofitClient;
@@ -17,9 +21,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ExecuteProtocolActivity extends AppCompatActivity {
-    private MaterialButton scannerButton, step1, step2, step3, back;
+    private MaterialButton scannerButton,  back;
     private TextView score, nameProtocol, authorProtocol, pass;
     private String protocolId;
+    private AdapterSteps adapterSteps;
+    private Protocol protocol;
+    private RecyclerView stepRv;
+
 
 
     @Override
@@ -27,22 +35,30 @@ public class ExecuteProtocolActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_execute_protocol);
         findViewById();
+        stepRv.setHasFixedSize(true);
+
         protocolId = getIntent().getStringExtra("id");
         setButtonClickListener();
         findById(protocolId);
+//        loadSteps();
 
+    }
+
+    private void loadSteps(Protocol protocol) {
+        adapterSteps = new AdapterSteps(ExecuteProtocolActivity.this,protocol.getSteps(), Long.valueOf(protocolId) );
+        stepRv.setLayoutManager(new LinearLayoutManager(ExecuteProtocolActivity.this));
+        stepRv.setAdapter(adapterSteps);
     }
 
     private void findViewById() {
         scannerButton = findViewById(R.id.scannerButton);
         back = findViewById(R.id.back);
-        step1 = findViewById(R.id.step1);
-        step2 = findViewById(R.id.step2);
-        step3 = findViewById(R.id.step3);
+
         nameProtocol = findViewById(R.id.nameProtocol);
         authorProtocol = findViewById(R.id.authorProtocol);
         pass = findViewById(R.id.pass);
         score = findViewById(R.id.score);
+        stepRv = findViewById(R.id.stepRv);
 
     }
 
@@ -64,7 +80,10 @@ public class ExecuteProtocolActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Protocol> call, Response<Protocol> response) {
                 if (response.isSuccessful()) {
-                    assignValue(response.body());
+                    protocol = response.body();
+                    assignValue(protocol);
+                    loadSteps(protocol);
+
                 } else {
                     // Handle unsuccessful response
                 }
@@ -81,6 +100,10 @@ public class ExecuteProtocolActivity extends AppCompatActivity {
     private void assignValue(Protocol protocol) {
         nameProtocol.setText(protocol.getName());
         authorProtocol.setText(protocol.getTaskListAuthor());
+        if (protocol.getScore()!=null){
+            score.setText(String.valueOf(protocol.getScore().getRating()));
+
+        }
 
     }
 

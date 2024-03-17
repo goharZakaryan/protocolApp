@@ -1,28 +1,26 @@
 package com.example.protocolapp.activity;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.protocolapp.R;
 import com.example.protocolapp.model.Protocol;
@@ -32,14 +30,16 @@ import com.example.protocolapp.retrofit.ApiInterface;
 import com.example.protocolapp.retrofit.RetrofitClient;
 import com.google.android.material.button.MaterialButton;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,25 +47,31 @@ import retrofit2.Response;
 public class AddProtocolActivity extends AppCompatActivity {
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
+
     private Map<Integer, EditText> stepEditTextList = new HashMap<>();
+    private Map<Integer, LinearLayout> llForUpload = new HashMap<>();
     private Map<Integer, EditText> instructionList = new HashMap<>();
+    private Map<Integer, List<String>> filePathList = new HashMap<>();
     private List<Step> stepList = new ArrayList<>();
+    private List<String> fPathList = new ArrayList<>();
 
     private MaterialButton save, back;
-    private LinearLayout editTextContainer;
+    private LinearLayout editTextContainer, upload, linearLayout;
     private Button addStep;
     private int stepCounter = 2;
     private int marginTop = 2600;
     private Protocol protocol;
     private static final int PICK_IMAGE_REQUEST = 1;
+    private boolean uploadFile;
     private Button selectImageButton;
     private ImageView imageView;
     private VideoView videoView;
     private View fileView;
     private Long protocolId;
+    private int filepathCount;
 
     private EditText nameET, taskListET, taskListAuthorET, instructionEditText, stepEditText, description1ET, newEditText;
-    private String name, taskList, taskListAuthor, description1, newText,email;
+    private String name, taskList, taskListAuthor, description1, newText, email;
 
 
     @Override
@@ -74,16 +80,8 @@ public class AddProtocolActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_protocol);
         findViewById();
         setButtonClickListener();
-        email=getIntent().getStringExtra("email");
-        protocolId=getIntent().getLongExtra("id",0);
-
-        videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
-                Log.e("VideoView", "Error occurred: " + what + ", " + extra);
-                return false; // Return true if you want to handle the error, false otherwise
-            }
-        });
+        email = getIntent().getStringExtra("email");
+        protocolId = getIntent().getLongExtra("id", 0);
 
 
     }
@@ -99,6 +97,7 @@ public class AddProtocolActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         videoView = findViewById(R.id.videoView);
         fileView = findViewById(R.id.fileView);
+        upload = findViewById(R.id.upload);
 
 
         editTextContainer = findViewById(R.id.editTextContainer);
@@ -107,7 +106,15 @@ public class AddProtocolActivity extends AppCompatActivity {
     }
 
     private void setButtonClickListener() {
-        selectImageButton.setOnClickListener(view -> openFileChooser());
+        selectImageButton.setOnClickListener(view -> {
+            linearLayout = new LinearLayout(this);
+
+            filepathCount = 0;
+
+            llForUpload.put(filepathCount,linearLayout);
+            upload.addView(linearLayout);
+            openFileChooser();
+        });
 
         back.setOnClickListener(v -> {
             Intent intent = new Intent(AddProtocolActivity.this, MainActivity.class);
@@ -117,9 +124,7 @@ public class AddProtocolActivity extends AppCompatActivity {
             collectValuesFromEditTexts();
             assignValues();
             btnPostRequest();
-            Intent intent = new Intent(AddProtocolActivity.this, SuccessPageActivity.class);
-            stepList = new ArrayList<>();
-            startActivity(intent);
+
         });
         addStep.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,29 +142,41 @@ public class AddProtocolActivity extends AppCompatActivity {
         newText = newEditText.getText().toString();
         Step step1 = new Step("1", description1, newText);
         stepList.add(step1);
-        protocol = new Protocol( protocolId,name, taskList, taskListAuthor, stepList,new User(email));
+        protocol = new Protocol(protocolId, name, taskList, taskListAuthor, stepList, new User(email));
     }
 
     private void btnPostRequest() {
         ApiInterface apiInterface = RetrofitClient.getRetrofitInstance().create(ApiInterface.class);
-        Call<String> call = apiInterface.save(protocol);
+        List<MultipartBody.Part> fileParts = new ArrayList<>();
+        for (int i = 0; i < fPathList.size(); i++) {
+            Uri fileUri = Uri.parse(fPathList.get(i));
+
+            File file = new File(fileUri.toString());
+
+            RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            MultipartBody.Part filePart = MultipartBody.Part.createFormData("file" + i, file.getName(), requestFile);
+            fileParts.add(filePart);
+        }
+        Call<String> call = apiInterface.save(protocol, fileParts);
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {
                     // Handle successful response
-                    String result = response.body();
+                    Intent intent = new Intent(AddProtocolActivity.this, SuccessPageActivity.class);
+                    stepList = new ArrayList<>();
+                    startActivity(intent);
                 } else {
-                    // Handle error response
-                    String error = "Error: " + response.code();
+                    Toast.makeText(AddProtocolActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                // Handle failure
-                t.printStackTrace();
+                Log.e("Retrofit", "Error: " + t.getMessage(), t);
+                Toast.makeText(AddProtocolActivity.this, "Login ", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -181,28 +198,54 @@ public class AddProtocolActivity extends AppCompatActivity {
                 String fileType = getContentResolver().getType(fileUri);
                 if (fileType != null) {
                     if (fileType.startsWith("image/")) {
-                        // Handle image file
+                        ImageView imageView1 = new ImageView(this);
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), fileUri);
-                        imageView.setImageBitmap(bitmap);
-                        imageView.setVisibility(View.VISIBLE); // Show the ImageView
-                    } else if (fileType.startsWith("video/")) {
-                        videoView.setVideoURI(fileUri);
-                        videoView.setVisibility(View.VISIBLE);
+                        imageView1.setLayoutParams(new ViewGroup.LayoutParams(200, 200));
 
-                        MediaController mediaController = new MediaController(this);
-                        mediaController.setAnchorView(videoView);
+                        imageView1.setImageBitmap(bitmap);
+
+
+                        List<String> strings;
+                        if (filePathList.get(filepathCount) != null) {
+                            strings = filePathList.get(filepathCount);
+                            strings.add(fileUri.toString());
+                        } else {
+                            strings = new ArrayList<>();
+                            strings.add(fileUri.toString());
+                        }
+                        llForUpload.get(filepathCount).addView(imageView1);
+                        filePathList.put(filepathCount, strings);
+
+                    } else if (fileType.startsWith("video/")) {
+                        MediaController  mediaController = new MediaController(this);
+                        ;
+                        VideoView videoView = new VideoView(this);
+                        videoView.setVideoURI(fileUri);
+                        videoView.pause();
+                        videoView.setLayoutParams(new ViewGroup.LayoutParams(200, 200));
+
+                        List<String> strings;
+                        if (filePathList.get(filepathCount) != null) {
+                            strings = filePathList.get(filepathCount);
+                            strings.add(fileUri.toString());
+                        } else {
+                            strings = new ArrayList<>();
+                            strings.add(fileUri.toString());
+                        }
+                        llForUpload.get(filepathCount).addView(videoView);
+                        filePathList.put(filepathCount, strings);
+                        videoView.setVisibility(View.VISIBLE);
                         videoView.setMediaController(mediaController);
-                        videoView.start();
-                        imageView.setVisibility(View.GONE);
-                        fileView.setVisibility(View.GONE);
+                        mediaController.setMinimumHeight(1);
                     } else if (fileType.startsWith("text/")) {
                         // Handle text file
-                        String text = readTextFile(fileUri);
 //                        fileView.setText(text);
                         fileView.setVisibility(View.VISIBLE);
                         imageView.setVisibility(View.GONE);
                         videoView.setVisibility(View.GONE);
                     }
+                  getRealPathFromURI(fileUri);
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -210,30 +253,31 @@ public class AddProtocolActivity extends AppCompatActivity {
         }
     }
 
-    private String readTextFile(Uri fileUri) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(getContentResolver().openInputStream(fileUri)));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            stringBuilder.append(line).append("\n");
-        }
-        reader.close();
-        return stringBuilder.toString();
+    private String getRealPathFromURI(Uri uri) throws IOException {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if (cursor == null) return null;
+        int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String path = cursor.getString(columnIndex);
+        cursor.close();
+        fPathList.add(path);
+
+        return path;
     }
-
-
     private void createInputs() {
         // Create LinearLayout as a container for each set of views
-        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout = new LinearLayout(this);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
         );
+
         layoutParams.setMargins(50, marginTop, 0, 0);
         linearLayout.setLayoutParams(layoutParams);
         linearLayout.setGravity(LinearLayout.TEXT_ALIGNMENT_CENTER);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-
+        linearLayout.setId(stepCounter);
         editTextContainer.setId(stepCounter);
         editTextContainer.addView(linearLayout);
 
@@ -304,17 +348,19 @@ public class AddProtocolActivity extends AppCompatActivity {
         // Create Button for image selection
         Button uploadImageButton = new Button(this);
         uploadImageButton.setText("Выбрать изображение");
+        uploadImageButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_attach_file_24, 0, 0, 0);
+        uploadImageButton.setOnClickListener(view -> {
+            filepathCount = stepCounter;
+           LinearLayout linearLayoutU = new LinearLayout(this);
+            llForUpload.put(filepathCount,linearLayout);
+            linearLayout.addView(linearLayoutU);
+            uploadFile = true;
+            openFileChooser();
+
+        });
         linearLayout.addView(uploadImageButton);
-
-        // Create ImageView to display uploaded image
-        ImageView imageView = new ImageView(this);
-        linearLayout.addView(imageView);
-
-        // Increment step counter
         stepCounter++;
-
-        // Increase marginTop for the next set of views
-        marginTop = 20; // Adjust this value as needed
+        marginTop = 20;
     }
 
     private void collectValuesFromEditTexts() {
@@ -327,21 +373,5 @@ public class AddProtocolActivity extends AppCompatActivity {
             // You can store these values in an appropriate data structure or perform any other operations as needed
         }
     }
-    private void permission(){
 
-// Check if the permission is already granted
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Permission is not granted, request it
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    REQUEST_WRITE_EXTERNAL_STORAGE);
-        } else {
-            // Permission has already been granted
-            // Perform the operation that requires this permission
-        }
-
-    }
 }

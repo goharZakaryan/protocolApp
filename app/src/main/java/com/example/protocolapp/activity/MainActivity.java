@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +28,7 @@ import com.google.zxing.integration.android.IntentResult;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView firstView;
+    private Button button;
     private MaterialButton materialButton;
     private static final int PERMISSION_REQUEST_CAMERA = 1;
 
@@ -39,24 +40,28 @@ public class MainActivity extends AppCompatActivity {
         findViewById();
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
-            } else {
-                initQRCodeScanner();
-            }
-        } else {
-            initQRCodeScanner();
-        }
+
         materialButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
+        });
+        button.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
+                } else {
+                    initQRCodeScanner();
+                }
+            } else {
+                initQRCodeScanner();
+            }
         });
 
     }
 
     private void findViewById() {
         materialButton = findViewById(R.id.button2);
+        button = findViewById(R.id.scanner);
 
     }
 

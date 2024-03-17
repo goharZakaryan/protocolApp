@@ -4,18 +4,34 @@ import java.util.List;
 
 public class Protocol {
     private Long id;
-    private String  name, taskList,taskListAuthor;
-    private  User user;
+    private String name, taskList, taskListAuthor;
+    private User user;
     private List<Step> steps;
+    private Score score;
 
-    public Protocol(Long id,String name, String taskList, String taskListAuthor, List<Step> steps, User user) {
-        this.id=id;
+
+    public Protocol(Long id, String name, String taskList, String taskListAuthor, List<Step> steps, User user,Score score) {
+        this.id = id;
         this.name = name;
 
-        this.user=user;
+        this.user = user;
         this.taskList = taskList;
         this.taskListAuthor = taskListAuthor;
         this.steps = steps;
+        this.score = score;
+    }
+    public Protocol(Long id, String name, String taskList, String taskListAuthor, List<Step> steps, User user) {
+        this.id = id;
+        this.name = name;
+
+        this.user = user;
+        this.taskList = taskList;
+        this.taskListAuthor = taskListAuthor;
+        this.steps = steps;
+    }
+
+    public Protocol(Long id) {
+        this.id = id;
     }
 
     public Long getId() {
@@ -64,5 +80,13 @@ public class Protocol {
 
     public void setSteps(List<Step> steps) {
         this.steps = steps;
+    }
+
+    public Score getScore() {
+        return score;
+    }
+
+    public void setScore(Score score) {
+        this.score = score;
     }
 }

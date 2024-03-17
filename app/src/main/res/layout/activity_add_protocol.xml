@@ -11,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/save"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true">
 
         <RelativeLayout
@@ -38,120 +38,125 @@
             </LinearLayout>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="155dp"
-        android:gravity="center_horizontal"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="155dp"
+                android:gravity="center_horizontal"
 
-        android:orientation="vertical">
+                android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/nameProtocol"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="Название протокола"
-            android:textSize="20sp"
-            android:visibility="visible" />
-
-
-
-        <EditText
-            android:id="@+id/nameET"
-            android:layout_width="300dp"
-            android:layout_height="65dp"
-            android:layout_marginTop="10dp"
-
-            android:background="@color/white"
-            android:gravity="center_vertical"
-            android:inputType="textPersonName"
-            android:hint="Название"
-            android:textSize="15dp" />
+                <TextView
+                    android:id="@+id/nameProtocol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="Название протокола"
+                    android:textSize="20sp"
+                    android:visibility="visible" />
 
 
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/nameET"
+                    android:layout_width="300dp"
+                    android:layout_height="65dp"
+                    android:layout_marginTop="10dp"
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="260dp"
-        android:gravity="center"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
+                    android:hint="Название"
+                    android:inputType="textPersonName"
+                    android:textSize="15dp" />
 
-        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/taskList"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:text="Задача, для которой он предназначен"
-            android:textSize="15sp"
-            android:visibility="visible" />
+            </LinearLayout>
 
-        <EditText
-            android:id="@+id/taskListET"
-            android:layout_width="300dp"
-            android:layout_height="65dp"
-            android:background="@color/white"
-            android:gravity="center_vertical"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="260dp"
+                android:gravity="center"
 
-            android:inputType="textPersonName"
-            android:hint="Список задач"
-            android:textSize="15dp" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="355dp"
-        android:gravity="center"
+                android:orientation="vertical">
 
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/authorProtocol"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:text="Авторы протокола"
-            android:textSize="20sp"
-            android:visibility="visible" />
-        <EditText
-            android:id="@+id/taskListAuthorET"
-            android:layout_width="300dp"
-            android:layout_height="65dp"
-            android:background="@color/white"
-            android:gravity="center_vertical"
+                <TextView
+                    android:id="@+id/taskList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="Задача, для которой он предназначен"
+                    android:textSize="15sp"
+                    android:visibility="visible" />
 
-            android:hint="Список задач"
-            android:inputType="textPersonName"
-            android:textSize="15dp" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="455dp"
-        android:gravity="center"
+                <EditText
+                    android:id="@+id/taskListET"
+                    android:layout_width="300dp"
+                    android:layout_height="65dp"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
 
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/stepProtocol"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:text="Шаги протокола"
-            android:textSize="20sp"
-            android:visibility="visible" />
-        <EditText
-            android:id="@+id/step1ET"
-            android:layout_width="300dp"
-            android:layout_height="65dp"
-            android:background="@color/white"
-            android:gravity="center_vertical"
+                    android:hint="Список задач"
+                    android:inputType="textPersonName"
+                    android:textSize="15dp" />
+            </LinearLayout>
 
-            android:hint="1 шаги "
-            android:inputType="textPersonName"
-            android:textSize="15dp" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="355dp"
+                android:gravity="center"
+
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/authorProtocol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="Авторы протокола"
+                    android:textSize="20sp"
+                    android:visibility="visible" />
+
+                <EditText
+                    android:id="@+id/taskListAuthorET"
+                    android:layout_width="300dp"
+                    android:layout_height="65dp"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
+
+                    android:hint="Список задач"
+                    android:inputType="textPersonName"
+                    android:textSize="15dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="455dp"
+                android:gravity="center"
+
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/stepProtocol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="Шаги протокола"
+                    android:textSize="20sp"
+                    android:visibility="visible" />
+
+                <EditText
+                    android:id="@+id/step1ET"
+                    android:layout_width="300dp"
+                    android:layout_height="65dp"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
+
+                    android:hint="1 шаги "
+                    android:inputType="textPersonName"
+                    android:textSize="15dp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -179,10 +184,11 @@
                     android:background="@color/white"
                     android:gravity="center_vertical"
 
-                    android:inputType="textPersonName"
                     android:hint="Описание"
+                    android:inputType="textPersonName"
                     android:textSize="15dp" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -205,15 +211,19 @@
                     android:layout_height="65dp"
                     android:background="@color/white"
                     android:gravity="center_vertical"
-                    android:inputType="textPersonName"
                     android:hint="текст"
+                    android:inputType="textPersonName"
                     android:textSize="15dp" />
 
             </LinearLayout>
+
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/upload"
+
+                android:layout_width="360dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="755dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="770dp"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -227,25 +237,12 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/uploadImageButton"
                     android:layout_width="wrap_content"
-                    app:backgroundTint="@color/white"
-
                     android:layout_height="wrap_content"
-                    android:text="Выбрать изображение" />
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone"/>
-                <VideoView
-                    android:id="@+id/videoView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone"/>
-                <View
-                    android:id="@+id/fileView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone"/>
+                    app:iconSize="18dp"
+                    app:icon="@drawable/baseline_attach_file_24"
+                    app:backgroundTint="@color/light_gray"
+                    app:iconTint="@color/black" />
+
             </LinearLayout>
 
 
@@ -260,13 +257,13 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/addStep"
-                    app:backgroundTint="@color/white"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_margin="5dp"
                     android:layout_gravity="right"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/baseline_add_circle_24"
                     android:text="Добавить шаг"
-                    android:background="@drawable/baseline_add_circle_24" />
+                    app:backgroundTint="@color/white" />
 
 
             </LinearLayout>
@@ -284,24 +281,24 @@
         style="@style/Widget.AppCompat.Button"
         android:layout_width="300dp"
         android:layout_height="65dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
         android:text="Сохранить"
         android:textColor="@color/black"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         app:backgroundTint="@color/white" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:text="Назад к протоколам"
         android:textColor="@color/black"
         app:backgroundTint="@color/light_gray"
         app:iconSize="50dp"
-        app:iconTint="@color/black"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        app:iconTint="@color/black" />
 
 
 </RelativeLayout>
