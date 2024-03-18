@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -53,7 +52,7 @@ public class AddProtocolActivity extends AppCompatActivity {
     private Map<Integer, EditText> instructionList = new HashMap<>();
     private Map<Integer, List<String>> filePathList = new HashMap<>();
     private List<Step> stepList = new ArrayList<>();
-    private List<String> fPathList = new ArrayList<>();
+    private List<Uri> fPathList = new ArrayList<>();
 
     private MaterialButton save, back;
     private LinearLayout editTextContainer, upload, linearLayout;
@@ -111,7 +110,7 @@ public class AddProtocolActivity extends AppCompatActivity {
 
             filepathCount = 0;
 
-            llForUpload.put(filepathCount,linearLayout);
+            llForUpload.put(filepathCount, linearLayout);
             upload.addView(linearLayout);
             openFileChooser();
         });
@@ -140,7 +139,7 @@ public class AddProtocolActivity extends AppCompatActivity {
         taskListAuthor = taskListAuthorET.getText().toString();
         description1 = description1ET.getText().toString();
         newText = newEditText.getText().toString();
-        Step step1 = new Step("1", description1, newText);
+        Step step1 = new Step("1", description1, newText,filePathList.get(0));
         stepList.add(step1);
         protocol = new Protocol(protocolId, name, taskList, taskListAuthor, stepList, new User(email));
     }
@@ -149,20 +148,20 @@ public class AddProtocolActivity extends AppCompatActivity {
         ApiInterface apiInterface = RetrofitClient.getRetrofitInstance().create(ApiInterface.class);
         List<MultipartBody.Part> fileParts = new ArrayList<>();
         for (int i = 0; i < fPathList.size(); i++) {
-            Uri fileUri = Uri.parse(fPathList.get(i));
-
-            File file = new File(fileUri.toString());
-
+            File file = new File(Uri.parse(fPathList.get(i).toString()).toString());
             RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-            MultipartBody.Part filePart = MultipartBody.Part.createFormData("file" + i, file.getName(), requestFile);
+            MultipartBody.Part filePart = MultipartBody.Part.createFormData("fileParts", file.getName(), requestFile);
             fileParts.add(filePart);
-        }
-        Call<String> call = apiInterface.save(protocol, fileParts);
 
-        call.enqueue(new Callback<String>() {
+        }
+
+
+        Call<Void> call = apiInterface.save(protocol, fileParts);
+
+        call.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                if (response.isSuccessful()) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.code()==302) {
                     // Handle successful response
                     Intent intent = new Intent(AddProtocolActivity.this, SuccessPageActivity.class);
                     stepList = new ArrayList<>();
@@ -174,7 +173,7 @@ public class AddProtocolActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 Log.e("Retrofit", "Error: " + t.getMessage(), t);
                 Toast.makeText(AddProtocolActivity.this, "Login ", Toast.LENGTH_SHORT).show();
             }
@@ -182,10 +181,12 @@ public class AddProtocolActivity extends AppCompatActivity {
     }
 
     private void openFileChooser() {
+
         Intent intent = new Intent();
-        intent.setType("*/*"); // Allow all types of files
+        intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select File"), PICK_IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent,
+                "Select file to upload "), PICK_IMAGE_REQUEST);
     }
 
     @Override
@@ -194,8 +195,10 @@ public class AddProtocolActivity extends AppCompatActivity {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri fileUri = data.getData();
+            fPathList.add(Uri.parse(getPath(fileUri)));
             try {
                 String fileType = getContentResolver().getType(fileUri);
+
                 if (fileType != null) {
                     if (fileType.startsWith("image/")) {
                         ImageView imageView1 = new ImageView(this);
@@ -217,8 +220,7 @@ public class AddProtocolActivity extends AppCompatActivity {
                         filePathList.put(filepathCount, strings);
 
                     } else if (fileType.startsWith("video/")) {
-                        MediaController  mediaController = new MediaController(this);
-                        ;
+                        // Your existing code for handling videos
                         VideoView videoView = new VideoView(this);
                         videoView.setVideoURI(fileUri);
                         videoView.pause();
@@ -235,8 +237,7 @@ public class AddProtocolActivity extends AppCompatActivity {
                         llForUpload.get(filepathCount).addView(videoView);
                         filePathList.put(filepathCount, strings);
                         videoView.setVisibility(View.VISIBLE);
-                        videoView.setMediaController(mediaController);
-                        mediaController.setMinimumHeight(1);
+                        // Additional configurations or operations related to the videoView
                     } else if (fileType.startsWith("text/")) {
                         // Handle text file
 //                        fileView.setText(text);
@@ -244,7 +245,7 @@ public class AddProtocolActivity extends AppCompatActivity {
                         imageView.setVisibility(View.GONE);
                         videoView.setVisibility(View.GONE);
                     }
-                  getRealPathFromURI(fileUri);
+
 
                 }
             } catch (IOException e) {
@@ -253,18 +254,19 @@ public class AddProtocolActivity extends AppCompatActivity {
         }
     }
 
-    private String getRealPathFromURI(Uri uri) throws IOException {
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-        if (cursor == null) return null;
-        int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        String path = cursor.getString(columnIndex);
-        cursor.close();
-        fPathList.add(path);
+    public String getPath(Uri uri) {
 
-        return path;
+        String[] projection = { MediaStore.Images.Media.DATA };
+
+        Cursor cursor = getContentResolver().query(uri,
+                projection, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+
+        return cursor.getString(column_index);
     }
+
+
     private void createInputs() {
         // Create LinearLayout as a container for each set of views
         linearLayout = new LinearLayout(this);
@@ -351,8 +353,8 @@ public class AddProtocolActivity extends AppCompatActivity {
         uploadImageButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_attach_file_24, 0, 0, 0);
         uploadImageButton.setOnClickListener(view -> {
             filepathCount = stepCounter;
-           LinearLayout linearLayoutU = new LinearLayout(this);
-            llForUpload.put(filepathCount,linearLayout);
+            LinearLayout linearLayoutU = new LinearLayout(this);
+            llForUpload.put(filepathCount, linearLayout);
             linearLayout.addView(linearLayoutU);
             uploadFile = true;
             openFileChooser();
@@ -367,7 +369,8 @@ public class AddProtocolActivity extends AppCompatActivity {
         for (Map.Entry<Integer, EditText> editText : stepEditTextList.entrySet()) {
             String instruction = instructionList.get(editText.getKey()).getText().toString();
             String text = editText.getValue().getText().toString();
-            Step step1 = new Step(editText.getKey().toString(), instruction, text);
+            List<String> uris = filePathList.get(editText.getKey().toString());
+            Step step1 = new Step(editText.getKey().toString(), instruction, text,uris);
             stepList.add(step1);
             System.out.println(text);
             // You can store these values in an appropriate data structure or perform any other operations as needed

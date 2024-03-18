@@ -6,17 +6,21 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.versionedparcelable.ParcelField;
 
+import java.util.List;
+
 public class Step  implements Parcelable {
     private Long id;
     private String number;
     private String name;
     private String description;
     private String photo;
+    private List<String> fileName;
 
-    public Step(String number, String name, String description) {
+    public Step(String number, String name, String description, List<String> fileName) {
         this.number = number;
         this.name = name;
         this.description = description;
+        this.fileName = fileName;
     }
 
     protected Step(Parcel in) {
@@ -100,5 +104,13 @@ public class Step  implements Parcelable {
         parcel.writeString(name);
         parcel.writeString(description);
         parcel.writeString(photo);
+    }
+
+    public List<String> getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(List<String> fileName) {
+        this.fileName = fileName;
     }
 }

@@ -24,9 +24,9 @@ public interface ApiInterface {
 
     @POST("server")
     @Multipart
-    Call<String> save(
-            @Part("requestModel") Protocol requestModel,
-            @Part List<MultipartBody.Part> files
+    Call<Void> save(
+            @Part("protocol") Protocol requestModel,
+            @Part List<MultipartBody.Part> fileParts
     );
     @POST("score")
     Call<String> saveScore(@Body Score requestModel);
