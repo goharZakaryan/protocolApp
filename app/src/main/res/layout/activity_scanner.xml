@@ -42,12 +42,12 @@
 
     <TextView
         android:id="@+id/text"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="81dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="50dp"
         android:clickable="false"
         android:gravity="center"
-        android:text="Отсканируйте  QR-код протокола, который находится в документе"
+        android:text="Scan the QR code of the protocol that is in the document"
         android:visibility="visible" />
 
 

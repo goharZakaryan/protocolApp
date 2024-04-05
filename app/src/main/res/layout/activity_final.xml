@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text=" Спасибо за отзыв!"
+            android:text="Thanks for the feedback!"
             android:textSize="30sp"
             android:visibility="visible" />
         <TextView
@@ -28,7 +28,8 @@
             android:layout_width="wrap_content"
             android:layout_height="131dp"
             android:gravity="center"
-            android:text=" Мы учтём Ваши пожелания и внесём необходимые  изменения."
+            android:text=" We will take into account your wishes
+and make the necessary changes."
             android:textSize="20sp"
             android:visibility="visible" />
 
@@ -48,7 +49,7 @@
             style="@style/Widget.AppCompat.Button"
             android:layout_width="240dp"
             android:layout_height="80dp"
-            android:text="Назад на главный экран"
+            android:text="графия местоположе"
 
             android:textColor="@color/black"
             app:backgroundTint="@color/white" />

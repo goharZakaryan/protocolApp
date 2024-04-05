@@ -51,7 +51,7 @@
                 android:layout_margin="8dp"
                 android:drawablePadding="40dp"
 
-                android:text="Удалить"
+                android:text="Delete"
                 android:textColor="@color/black"
                 android:textSize="18dp" />
         </LinearLayout>
@@ -88,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="Редактировать"
+                android:text="Edit"
                 android:textColor="@color/black"
                 android:textSize="18dp" />
 
@@ -109,7 +109,7 @@
                 android:ellipsize="end"
 
                 android:maxLines="1"
-                android:text="Рейтинг протокола"
+                android:text="Protocol Rating"
                 android:textColor="@color/black"
                 android:textSize="18dp" />
 

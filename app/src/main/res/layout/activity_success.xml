@@ -21,7 +21,8 @@
             android:layout_width="wrap_content"
             android:layout_height="131dp"
             android:gravity="center"
-            android:text=" Успех \n Ваш протокол  успешно добавлен"
+            android:text=" Success! \n Your protocol has been
+successfully added."
             android:textSize="30sp"
             android:visibility="visible" />
 
@@ -40,7 +41,7 @@
             android:id="@+id/toTheProtocols"
             android:layout_width="193dp"
             android:layout_height="match_parent"
-            android:text="К протоколам"
+            android:text="Go to the protocols"
             android:textColor="@color/black"
             app:backgroundTint="@color/white" />
 

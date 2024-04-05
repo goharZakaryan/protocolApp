@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Оцените протокол"
+            android:text="Rate the protocol"
             android:textSize="25sp"
             android:visibility="visible" />
 
@@ -31,7 +31,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="left"
-            android:text="Пожалуйста оцените протокол, чтобы улучшить его и порекомендовать другим."
+            android:text="Please rate the protocol to improve it and
+recommend it to others."
             android:textSize="16sp"
             android:visibility="visible" />
 
@@ -41,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center"
-            android:text="Рейтинг"
+            android:text="Rating"
             android:textSize="16sp"
             android:visibility="visible" />
     </LinearLayout>
@@ -114,7 +115,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Комментарий"
+            android:text="Comment"
             android:textSize="16sp"
             android:visibility="visible" />
 
@@ -126,7 +127,7 @@
             android:layout_marginTop="10dp"
             android:background="@color/light_gray"
             android:gravity="left"
-            android:hint="Можно было бы улучшить..."
+            android:hint="Could be improved..."
 
             android:textSize="15sp"
             android:visibility="visible" />
@@ -139,7 +140,7 @@
         android:layout_height="100dp"
         android:layout_marginTop="550dp"
         android:layout_marginLeft="20dp"
-        android:text="Отправить отзыв"
+        android:text="Send Feedback"
         style="@style/Widget.AppCompat.Button"
         android:textColor="@color/black"
         app:backgroundTint="@color/light_gray" />

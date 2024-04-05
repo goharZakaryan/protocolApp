@@ -21,7 +21,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text=" Вы подошли к месту"
+            android:text="You approached the device
+"
             android:textSize="30sp"
             android:visibility="visible" />
 
@@ -30,7 +31,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text=" Нужно сделать это"
+            android:layout_marginTop="10dp"
+            android:text=" We need to do this,\n then
+this, then this."
             android:textSize="20sp"
             android:visibility="visible" />
 
@@ -49,7 +52,7 @@
             android:id="@+id/done"
             android:layout_width="200dp"
             android:layout_height="match_parent"
-            android:text="Готово"
+            android:text="Done"
             style="@style/Widget.AppCompat.Button"
 
             android:textColor="@color/black"

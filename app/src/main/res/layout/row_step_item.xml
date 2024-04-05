@@ -65,7 +65,7 @@
                 android:ellipsize="end"
 
                 android:maxLines="1"
-                android:text="Рейтинг протокола"
+                android:text="Protocol Rating"
                 android:textColor="@color/black"
                 android:textSize="14dp" />
 
@@ -77,7 +77,7 @@
                 android:layout_margin="7dp"
                 android:drawablePadding="40dp"
 
-                android:text="Перейти"
+                android:text="go"
                 android:textColor="@color/black"
                 android:textSize="14dp" />
         </LinearLayout>

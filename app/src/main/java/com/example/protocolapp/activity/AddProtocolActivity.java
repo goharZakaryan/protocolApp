@@ -10,18 +10,24 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.protocolapp.R;
+import com.example.protocolapp.adapter.AdapterProtocol;
+import com.example.protocolapp.model.Device;
 import com.example.protocolapp.model.Protocol;
 import com.example.protocolapp.model.Step;
 import com.example.protocolapp.model.User;
@@ -45,20 +51,21 @@ import retrofit2.Response;
 
 public class AddProtocolActivity extends AppCompatActivity {
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
-
+    private Spinner spinner;
+   private List<String> optionsArray=new ArrayList<>();
 
     private Map<Integer, EditText> stepEditTextList = new HashMap<>();
     private Map<Integer, LinearLayout> llForUpload = new HashMap<>();
+    private Map<Integer, LinearLayout> ll = new HashMap<>();
     private Map<Integer, EditText> instructionList = new HashMap<>();
     private Map<Integer, List<String>> filePathList = new HashMap<>();
     private List<Step> stepList = new ArrayList<>();
     private List<Uri> fPathList = new ArrayList<>();
 
     private MaterialButton save, back;
-    private LinearLayout editTextContainer, upload, linearLayout;
+    private LinearLayout editTextContainer, upload, linearLayout, second;
     private Button addStep;
     private int stepCounter = 2;
-    private int marginTop = 2600;
     private Protocol protocol;
     private static final int PICK_IMAGE_REQUEST = 1;
     private boolean uploadFile;
@@ -78,9 +85,12 @@ public class AddProtocolActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_protocol);
         findViewById();
+        requestToServer();
+
         setButtonClickListener();
         email = getIntent().getStringExtra("email");
         protocolId = getIntent().getLongExtra("id", 0);
+
 
 
     }
@@ -97,9 +107,11 @@ public class AddProtocolActivity extends AppCompatActivity {
         videoView = findViewById(R.id.videoView);
         fileView = findViewById(R.id.fileView);
         upload = findViewById(R.id.upload);
+        second = findViewById(R.id.second);
+        spinner = findViewById(R.id.spinner);
 
 
-        editTextContainer = findViewById(R.id.editTextContainer);
+        editTextContainer = findViewById(R.id.main);
         addStep = findViewById(R.id.addStep);
         selectImageButton = findViewById(R.id.uploadImageButton);
     }
@@ -139,7 +151,7 @@ public class AddProtocolActivity extends AppCompatActivity {
         taskListAuthor = taskListAuthorET.getText().toString();
         description1 = description1ET.getText().toString();
         newText = newEditText.getText().toString();
-        Step step1 = new Step("1", description1, newText,filePathList.get(0));
+        Step step1 = new Step("1", description1, newText, filePathList.get(0));
         stepList.add(step1);
         protocol = new Protocol(protocolId, name, taskList, taskListAuthor, stepList, new User(email));
     }
@@ -156,12 +168,12 @@ public class AddProtocolActivity extends AppCompatActivity {
         }
 
 
-        Call<Void> call = apiInterface.save(protocol, fileParts);
+        Call<Void> call = apiInterface.save(protocol);
 
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.code()==302) {
+                if (response.code() == 302) {
                     // Handle successful response
                     Intent intent = new Intent(AddProtocolActivity.this, SuccessPageActivity.class);
                     stepList = new ArrayList<>();
@@ -256,7 +268,7 @@ public class AddProtocolActivity extends AppCompatActivity {
 
     public String getPath(Uri uri) {
 
-        String[] projection = { MediaStore.Images.Media.DATA };
+        String[] projection = {MediaStore.Images.Media.DATA};
 
         Cursor cursor = getContentResolver().query(uri,
                 projection, null, null, null);
@@ -275,21 +287,19 @@ public class AddProtocolActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT
         );
 
-        layoutParams.setMargins(50, marginTop, 0, 0);
         linearLayout.setLayoutParams(layoutParams);
         linearLayout.setGravity(LinearLayout.TEXT_ALIGNMENT_CENTER);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setId(stepCounter);
         editTextContainer.setId(stepCounter);
-        editTextContainer.addView(linearLayout);
 
         // Create TextView for step description
         TextView stepTextView = new TextView(this);
         stepTextView.setText("Шаг " + stepCounter);
-        stepTextView.setBackgroundColor(Color.WHITE);
-        stepTextView.setHeight(200);
+        stepTextView.setHeight(100);
+        stepTextView.setBackgroundColor(Color.LTGRAY);
 
-        stepTextView.setTextSize(20);
+        stepTextView.setTextSize(15);
         stepTextView.setId(stepCounter);
 
         // Set drawable icon for deletion
@@ -297,45 +307,44 @@ public class AddProtocolActivity extends AppCompatActivity {
         stepTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (stepCounter == 3) {
-                    marginTop = 2600;
+                if (stepCounter >= 3) {
                     stepCounter--;
                 }
-                editTextContainer.removeView(linearLayout);
+                editTextContainer.removeView(ll.get(stepCounter));
             }
         });
 
 
         linearLayout.addView(stepTextView);
         TextView descriptionStep = new TextView(this);
-        descriptionStep.setText("Описание шага");
-        descriptionStep.setTextSize(20);
+        descriptionStep.setText("Protocol name");
+        descriptionStep.setTextSize(15);
         descriptionStep.setId(stepCounter);
 
         linearLayout.addView(descriptionStep);
 
         // Create EditText for step description
         stepEditText = new EditText(this);
-        stepEditText.setHint("Описание");
+        stepEditText.setHint("Name");
+        stepEditText.setBackgroundColor(Color.LTGRAY);
         stepEditText.setWidth(900);
-        stepEditText.setHeight(200);
+        stepEditText.setHeight(100);
         stepEditText.setId(stepCounter);
-        stepEditText.setBackgroundColor(Color.WHITE);
 
         linearLayout.addView(stepEditText);
 
         // Create TextView for additional instruction
         TextView instructionTextView = new TextView(this);
-        instructionTextView.setText("Инструкция");
-        instructionTextView.setTextSize(20);
+        instructionTextView.setText("Instruction");
+        instructionTextView.setTextSize(15);
         linearLayout.addView(instructionTextView);
 
         // Create EditText for additional instruction
         instructionEditText = new EditText(this);
-        instructionEditText.setHint("Текст");
+        instructionEditText.setHint("text");
+        instructionEditText.setBackgroundColor(Color.LTGRAY);
         instructionEditText.setWidth(900);
         instructionEditText.setHeight(200);
-        instructionEditText.setBackgroundColor(Color.WHITE);
         instructionList.put(stepCounter, instructionEditText);
         stepEditTextList.put(stepCounter, stepEditText);
 
@@ -343,38 +352,92 @@ public class AddProtocolActivity extends AppCompatActivity {
 
         // Create TextView for image upload
         TextView imageTextView = new TextView(this);
-        imageTextView.setText("Загрузить изображение");
+        imageTextView.setText("Upload photos, videos and files");
         imageTextView.setTextSize(16);
         linearLayout.addView(imageTextView);
 
         // Create Button for image selection
         Button uploadImageButton = new Button(this);
-        uploadImageButton.setText("Выбрать изображение");
+        uploadImageButton.setText("upload");
+        uploadImageButton.setId(stepCounter);
         uploadImageButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_attach_file_24, 0, 0, 0);
+        linearLayout.addView(uploadImageButton);
+
         uploadImageButton.setOnClickListener(view -> {
-            filepathCount = stepCounter;
+            filepathCount = uploadImageButton.getId();
             LinearLayout linearLayoutU = new LinearLayout(this);
-            llForUpload.put(filepathCount, linearLayout);
+            llForUpload.put(filepathCount, linearLayoutU);
             linearLayout.addView(linearLayoutU);
             uploadFile = true;
             openFileChooser();
 
         });
-        linearLayout.addView(uploadImageButton);
+        editTextContainer.addView(linearLayout);
+        ll.put(stepCounter, linearLayout);
+        RelativeLayout.LayoutParams RL = (RelativeLayout.LayoutParams) second.getLayoutParams();
+        RL.addRule(RelativeLayout.BELOW, linearLayout.getId());
+        second.setLayoutParams(RL);
+
+
         stepCounter++;
-        marginTop = 20;
     }
 
     private void collectValuesFromEditTexts() {
         for (Map.Entry<Integer, EditText> editText : stepEditTextList.entrySet()) {
             String instruction = instructionList.get(editText.getKey()).getText().toString();
             String text = editText.getValue().getText().toString();
-            List<String> uris = filePathList.get(editText.getKey().toString());
-            Step step1 = new Step(editText.getKey().toString(), instruction, text,uris);
+            List<String> uris = filePathList.get(Integer.valueOf(editText.getKey().toString()));
+            Step step1 = new Step(editText.getKey().toString(), instruction, text, uris);
             stepList.add(step1);
             System.out.println(text);
             // You can store these values in an appropriate data structure or perform any other operations as needed
         }
     }
 
+    private void spinner() {
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, optionsArray);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+
+    }
+    private void requestToServer() {
+        ApiInterface apiInterface = RetrofitClient.getRetrofitInstance().create(ApiInterface.class);
+        Call<List<Device>> call = apiInterface.findAllDevices();
+        call.enqueue(new Callback<List<Device>>() {
+            @Override
+            public void onResponse(Call<List<Device>> call, Response<List<Device>> response) {
+                if (response.isSuccessful()) {
+                    List<Device> devices=response.body();
+
+                    for (int i = 0; i < devices.size(); i++) {
+                        optionsArray.add(devices.get(i).getName());
+                    }
+
+                } else {
+                    // Handle unsuccessful response
+                    Toast.makeText(AddProtocolActivity.this, "Request unsuccessful", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Device>> call, Throwable t) {
+                // Handle request failure
+                t.printStackTrace();
+                Toast.makeText(AddProtocolActivity.this, "Request failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            Thread.sleep(501);
+                    spinner();
+        }catch (Exception e) {
+        }
+
+    }
 }

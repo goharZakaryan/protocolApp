@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Выберите режим"
+        android:text="Select the mode"
         android:textSize="30sp"
         android:visibility="visible" />
 
@@ -30,7 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="В каком режиме Вам будет  комфортно выполнить протокол?"
+        android:text="In what mode would you feel
+comfortable performing the protocol?"
         android:textSize="20sp"
         android:layout_marginTop="10dp"
         android:visibility="visible" />

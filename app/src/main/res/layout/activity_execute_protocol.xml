@@ -81,10 +81,10 @@
         tools:listitem="@layout/row_protocol_item" />
     <com.google.android.material.button.MaterialButton
         android:id="@+id/notElected"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="220dp"
-        android:text="не избран"
+        android:text="not added to favorites"
         android:textColor="@color/black"
         app:backgroundTint="@color/white"
 
@@ -94,7 +94,7 @@
         android:id="@+id/back"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:text="Назад"
+        android:text="Back"
         android:textColor="@color/black"
         app:backgroundTint="@color/white"
         app:iconSize="50dp"
